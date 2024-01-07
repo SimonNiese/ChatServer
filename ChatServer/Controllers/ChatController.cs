@@ -5,49 +5,65 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ChatServer.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NRedisStack;
-using NuGet.Protocol;
 using StackExchange.Redis;
 
-namespace ChatServer.Controllers
-{
-    [Route("api/[controller]")]
+namespace ChatServer.Controllers {
     [ApiController]
     public class ChatController : ControllerBase {
         private readonly IDatabase _redis;
+        private readonly HttpClient _httpClient;
 
         private JsonSerializerOptions _serializerOptions => new JsonSerializerOptions() {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true
         };
         
-        // GET: api/Chat
         public ChatController(IConnectionMultiplexer muxer) {
             _redis = muxer.GetDatabase();
+            _httpClient = new HttpClient() {
+                BaseAddress = new Uri($"{Program.Config.KeycloakUrl}/")
+            };
         }
 
+        [Authorize]
         [HttpGet]
-        public IEnumerable<ChatMessage> GetMessages([FromQuery] Guid userId) {
-            // Get userId from JWT
-            
+        [Route("Chat")]
+        public IEnumerable<ChatMessage> GetMessages() {
+            // Get Username
+            var username = HttpContext.Items["username"];
             // Read Cache
-            var messages = _redis.StringGet(userId.ToString()).ToJson();
+            var messages = _redis.StringGet(username.ToString());
             // Return Messages
             return JsonSerializer.Deserialize<List<ChatMessage>>(messages, _serializerOptions);
         }
-
-        // POST: api/Chat
+        
+        [Authorize]
         [HttpPost]
-        public ActionResult SendMessage([FromBody] ChatMessage value) {
-            // Get recipient userId
-            
+        [Route("chat")]
+        public ActionResult SendMessage([FromBody] ChatMessage message) {
             // Store message
-            var keyPair = new KeyValuePair<RedisKey, RedisValue>(value.Recipient, JsonSerializer.Serialize(value));
-            _redis.StringSet(key: value.Recipient, value: JsonSerializer.Serialize(value), TimeSpan.FromDays(3));
+            _redis.StringSet(key: message.Recipient, value: JsonSerializer.Serialize(message), TimeSpan.FromDays(3));
 
             return Ok();
+        }
+        
+        [HttpPost]
+        [Route("user")]
+        public string Login([FromBody] Login login) {
+            // Get JWT from keycloak
+            
+            // Return JWT to user
+            return "value";
+        }
+        
+        [Authorize]
+        [HttpGet("user/{username}")]
+        public string GetPublicKey(string username) {
+            return _redis.StringGet(username).ToString();
         }
     }
 }

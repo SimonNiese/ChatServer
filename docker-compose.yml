@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   cache:
-    container_name: cache
+    container_name: cache-container
     image: redis:6.2-alpine
     restart: always
     ports:
@@ -11,7 +11,7 @@ services:
       - cache:/data
 
   postgres:
-    container_name: postgres
+    container_name: postgres-container
     image: postgres:latest
     restart: unless-stopped
     environment:
@@ -24,10 +24,10 @@ services:
   keycloak:
     depends_on:
       - postgres
-    container_name: keycloak
+    container_name: keycloak-container
     environment:
       DB_VENDOR: postgres
-      DB_ADDR: postgres
+      DB_ADDR: postgres-container
       DB_DATABASE: keycloak
       DB_USER: db_admin
       DB_PASSWORD: Ådmin123456789

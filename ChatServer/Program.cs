@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using System.Text.Json;
 using ChatServer.Model;
 using FluentArgs;
@@ -14,10 +15,13 @@ public class Program{
             .IsRequired()
             .Parameter<string>("-k", "--keycloak")
             .IsRequired()
-            .Call(keycloak => cache => {
+            .Parameter<string>("-r", "--realm")
+            .IsRequired()
+            .Call(realm => keycloak => cache => {
                 Config = new Config() {
                     CacheUrl = cache,
-                    KeycloakUrl = keycloak
+                    KeycloakUrl = keycloak,
+                    Realm = realm
                 };
             })
             .Parse(args);
@@ -47,7 +51,7 @@ public class Program{
                 options.Authority = Config.KeycloakUrl;
                 options.Audience = "my_client";
                 options.RequireHttpsMetadata = false;
-                options.MetadataAddress = Config.KeycloakUrl + ".well-known/openid-configuration";
+                options.MetadataAddress = Config.KeycloakUrl + "/" + Config.Realm + "/.well-known/openid-configuration";
 
                 options.Events = new JwtBearerEvents
                 {

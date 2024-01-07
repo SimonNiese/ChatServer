@@ -53,11 +53,11 @@ namespace ChatServer.Controllers {
         
         [HttpPost]
         [Route("user")]
-        public string Login([FromBody] Login login) {
+        public async Task<string> Login([FromBody] Login login) {
             // Get JWT from keycloak
-            
+            var jwt = await _httpClient.PostAsync("openid-connect/token", new StringContent(JsonSerializer.Serialize(login)));
             // Return JWT to user
-            return "value";
+            return await jwt.Content.ReadAsStringAsync();
         }
         
         [Authorize]

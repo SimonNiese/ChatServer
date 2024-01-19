@@ -2,9 +2,9 @@
 
 namespace ChatServer.Model;
 
-public record Login {
+public record SignUp {
     [Required]
     public string Username { get; set; }
     [Required]
-    public string Password { get; set; }
+    public string PublicKey { get; set; }
 }

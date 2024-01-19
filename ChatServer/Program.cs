@@ -1,8 +1,11 @@
+using System.Linq.Expressions;
+using System.Net;
 using System.Reflection.Metadata;
 using System.Text.Json;
 using ChatServer.Model;
 using FluentArgs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ServiceStack.Redis;
 using StackExchange.Redis;
 
 public class Program{
@@ -13,24 +16,23 @@ public class Program{
         FluentArgsBuilder.New()
             .Parameter<string>("-c", "--cache")
             .IsRequired()
-            .Parameter<string>("-k", "--keycloak")
+            .Parameter<int>("-p", "--port")
             .IsRequired()
-            .Parameter<string>("-r", "--realm")
-            .IsRequired()
-            .Call(realm => keycloak => cache => {
+            .Call(port => cache => {
                 Config = new Config() {
                     CacheUrl = cache,
-                    KeycloakUrl = keycloak,
-                    Realm = realm
+                    Port = port
                 };
+                Console.WriteLine("Config:\n"+
+                                  $"\tCache-address: {Config.CacheUrl}"+
+                                  $"\tPort: {Config.Port}");
             })
             .Parse(args);
 
-
+        
         var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
-
+        builder.WebHost.UseKestrel(options => options.Listen(IPAddress.Any, 8080));
         builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -43,44 +45,18 @@ public class Program{
                         .AllowAnyMethod();
                 });
         });
-
-// Keycloak integration
-        builder.Services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
-            {
-                options.Authority = Config.KeycloakUrl;
-                options.Audience = "my_client";
-                options.RequireHttpsMetadata = false;
-                options.MetadataAddress = Config.KeycloakUrl + "/" + Config.Realm + "/.well-known/openid-configuration";
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        context.Response.StatusCode = 401;
-                        context.Response.ContentType = "application/json";
-
-                        // Customize the error response
-                        var message = "Authentication failed: " + context.Exception.Message;
-                        var errorResponse = JsonSerializer.Serialize(new { message });
-                        return context.Response.WriteAsync(errorResponse);
-                    }
-                };
-            });
+        
 
 // Redis integration
-        builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Config.CacheUrl));
+        builder.Services.AddSingleton<RedisClient>(new RedisClient(new RedisEndpoint(Config.CacheUrl, Config.Port)));
 
-
+        
         var app = builder.Build();
-
+        
 // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment()) {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseHttpsRedirection();
+        
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseAuthorization();
 

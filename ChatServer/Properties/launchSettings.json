@@ -18,7 +18,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "commandLineArgs": "-c localhost:6379 -k localhost:28080 -r ChatServer"
+      "commandLineArgs": "-c localhost -p 6379"
     },
     "IIS Express": {
       "commandName": "IISExpress",

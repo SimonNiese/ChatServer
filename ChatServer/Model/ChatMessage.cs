@@ -8,5 +8,7 @@ public record ChatMessage {
     [Required]
     public string Recipient { get; set; }
     [Required]
-    public byte[] Message { get; set; }
+    public string Message { get; set; }
+    [Required]
+    public string Signature { get; set; }
 }

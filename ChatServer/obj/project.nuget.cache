@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "vNdhTt2s2fX5/PTLanrQjn/iiDLjHDiHZWm5P9VCBli1nSgaB9Fd2gtL1QrVReRTpJjRRFNxuxNPbc3fhV616A==",
+  "dgSpecHash": "ehcwl0IJHbx+KvHDN70EyY/L5tcMub+h6nzv1z8/mIh/0n5zcqP5EeVxGpyCLP3fnsSGMtOJL3ykw3b1Y6JbtQ==",
   "success": true,
   "projectFilePath": "/home/simonniese/Desktop/ChatServer/ChatServer/ChatServer.csproj",
   "expectedPackageFiles": [
     "/home/simonniese/.nuget/packages/fluentargs/0.9.7/fluentargs.0.9.7.nupkg.sha512",
     "/home/simonniese/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/8.0.0/microsoft.aspnetcore.authentication.jwtbearer.8.0.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/microsoft.aspnetcore.authentication.openidconnect/8.0.0/microsoft.aspnetcore.authentication.openidconnect.8.0.0.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/microsoft.extensions.apidescription.server/3.0.0/microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/microsoft.identitymodel.abstractions/7.0.3/microsoft.identitymodel.abstractions.7.0.3.nupkg.sha512",
     "/home/simonniese/.nuget/packages/microsoft.identitymodel.jsonwebtokens/7.0.3/microsoft.identitymodel.jsonwebtokens.7.0.3.nupkg.sha512",
@@ -18,15 +19,21 @@
     "/home/simonniese/.nuget/packages/nettopologysuite/2.5.0/nettopologysuite.2.5.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/nredisstack/0.11.0/nredisstack.0.11.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/pipelines.sockets.unofficial/2.2.8/pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/servicestack.common/8.0.0/servicestack.common.8.0.0.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/servicestack.interfaces/8.0.0/servicestack.interfaces.8.0.0.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/servicestack.redis/8.0.0/servicestack.redis.8.0.0.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/servicestack.text/8.0.0/servicestack.text.8.0.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/stackexchange.redis/2.6.122/stackexchange.redis.2.6.122.nupkg.sha512",
     "/home/simonniese/.nuget/packages/swashbuckle.aspnetcore/6.2.3/swashbuckle.aspnetcore.6.2.3.nupkg.sha512",
     "/home/simonniese/.nuget/packages/swashbuckle.aspnetcore.swagger/6.2.3/swashbuckle.aspnetcore.swagger.6.2.3.nupkg.sha512",
     "/home/simonniese/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.2.3/swashbuckle.aspnetcore.swaggergen.6.2.3.nupkg.sha512",
     "/home/simonniese/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.2.3/swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512",
     "/home/simonniese/.nuget/packages/system.collections.immutable/1.4.0/system.collections.immutable.1.4.0.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/system.diagnostics.diagnosticsource/6.0.0/system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",
     "/home/simonniese/.nuget/packages/system.identitymodel.tokens.jwt/7.0.3/system.identitymodel.tokens.jwt.7.0.3.nupkg.sha512",
     "/home/simonniese/.nuget/packages/system.io.pipelines/5.0.1/system.io.pipelines.5.0.1.nupkg.sha512",
-    "/home/simonniese/.nuget/packages/system.memory/4.5.4/system.memory.4.5.4.nupkg.sha512"
+    "/home/simonniese/.nuget/packages/system.memory/4.5.5/system.memory.4.5.5.nupkg.sha512",
+    "/home/simonniese/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
   ],
   "logs": []
 }

@@ -8,62 +8,57 @@ using ChatServer.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NRedisStack;
+using ServiceStack.Redis;
+using ServiceStack.Redis.Generic;
 using StackExchange.Redis;
 
 namespace ChatServer.Controllers {
     [ApiController]
     public class ChatController : ControllerBase {
-        private readonly IDatabase _redis;
-        private readonly HttpClient _httpClient;
+        private readonly RedisClient _redis;
 
         private JsonSerializerOptions _serializerOptions => new JsonSerializerOptions() {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true
         };
         
-        public ChatController(IConnectionMultiplexer muxer) {
-            _redis = muxer.GetDatabase();
-            _httpClient = new HttpClient() {
-                BaseAddress = new Uri($"{Program.Config.KeycloakUrl}/")
-            };
-        }
-
-        [Authorize]
-        [HttpGet]
-        [Route("Chat")]
-        public IEnumerable<ChatMessage> GetMessages() {
-            // Get Username
-            var username = HttpContext.Items["username"];
-            // Read Cache
-            var messages = _redis.StringGet(username.ToString());
-            // Return Messages
-            return JsonSerializer.Deserialize<List<ChatMessage>>(messages, _serializerOptions);
+        public ChatController(RedisClient redis) {
+            _redis = redis;
         }
         
-        [Authorize]
+        [HttpGet]
+        [Route("chat/{username}")]
+        public IEnumerable<ChatMessage> GetMessages(string username) {
+            var redisTypedClient = _redis.As<ChatMessage>();
+            // Read Cache
+            var messageList = redisTypedClient.Lists["message:" + username];
+            var messages = messageList.GetAll();
+            messageList.RemoveAll();
+            // Return Messages
+            return messages;
+        }
+        
         [HttpPost]
         [Route("chat")]
         public ActionResult SendMessage([FromBody] ChatMessage message) {
+            var redisTypedClient = _redis.As<ChatMessage>();
+            var redisMessageList = redisTypedClient.Lists["message:" + message.Recipient];
             // Store message
-            _redis.StringSet(key: message.Recipient, value: JsonSerializer.Serialize(message), TimeSpan.FromDays(3));
-
+            redisMessageList.Add(message);
+            _redis.ExpireEntryIn("message:" + message.Recipient, TimeSpan.FromDays(3));
             return Ok();
         }
         
         [HttpPost]
         [Route("user")]
-        public async Task<string> Login([FromBody] Login login) {
-            // Get JWT from keycloak
-            var jwt = await _httpClient.PostAsync("openid-connect/token", new StringContent(JsonSerializer.Serialize(login)));
-            // Return JWT to user
-            return await jwt.Content.ReadAsStringAsync();
+        public ActionResult Login([FromBody] SignUp signUp) {
+            _redis.Set("publicKey:" + signUp.Username, signUp.PublicKey);
+            return Ok();
         }
         
-        [Authorize]
         [HttpGet("user/{username}")]
         public string GetPublicKey(string username) {
-            return _redis.StringGet(username).ToString();
+            return _redis.Get<string>("publicKey:" + username);
         }
     }
 }
